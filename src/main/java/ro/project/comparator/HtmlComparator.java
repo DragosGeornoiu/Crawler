@@ -1,10 +1,21 @@
 package ro.project.comparator;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import difflib.Delta;
 import difflib.DiffUtils;
@@ -69,7 +80,8 @@ public class HtmlComparator {
 		String htmlToWrite = null;
 
 		// convert html to lines
-		List<String> lastVersionHtmlLines = htmlFileToLines(pathLastVersionHtml);
+		String lastVersionHtml = getHtmlFromFile(pathLastVersionHtml);
+		List<String> lastVersionHtmlLines = stringHtmlToLines(lastVersionHtml);
 		List<String> currentVersionHtmlLines = stringHtmlToLines(currenthVersionHtml);
 
 		Patch patch = DiffUtils.diff(lastVersionHtmlLines,
@@ -97,6 +109,7 @@ public class HtmlComparator {
 		}
 		htmlManager
 				.saveHtml(path, "diff" + currentV + lastV + "x", htmlToWrite);
+
 	}
 
 	/**
@@ -117,22 +130,19 @@ public class HtmlComparator {
 		return content;
 	}
 
-	/**
-	 * Returns the HTML from the given path as a List with each line in a
-	 * different node.
-	 * 
-	 * @param path
-	 *            The location of the HTML file to read from.
-	 * @return a List where each node represents a line from the HTML code.
-	 */
-	private List<String> htmlFileToLines(String path) {
-		List<String> content = new ArrayList<String>();
+	// Different from the one in htmlmanager because this one ads a new line at
+	// each line of the text in file
+	private String getHtmlFromFile(String location) {
+		String content = "";
 		BufferedReader in = null;
 		try {
-			in = new BufferedReader(new FileReader(path));
+			// in = new BufferedReader(new FileReader(location));
+			in = new BufferedReader(new InputStreamReader(new FileInputStream(
+					location), "UTF8"));
+
 			String str;
 			while ((str = in.readLine()) != null) {
-				content.add(str);
+				content += str + "\n";
 
 			}
 		} catch (IOException e) {
@@ -149,5 +159,4 @@ public class HtmlComparator {
 
 		return content;
 	}
-
 }

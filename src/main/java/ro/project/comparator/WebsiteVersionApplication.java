@@ -41,17 +41,18 @@ public class WebsiteVersionApplication {
 			File lastVersion = fileManager.getLastModifiedFile(path);
 			String lastVersionHtml = htmlManager.getHtmlFromFile(lastVersion
 					.toString());
-			
+
 			/*
-			 * Check if the two HTML strings are different, if not, do
-			 * nothing, if so, get the differences, and store them.
+			 * Check if the two HTML strings are different, if not, do nothing,
+			 * if so, get the differences, and store them.
 			 */
 			if (htmlManager.isDifferent(lastVersionHtml, html)) {
 				System.out.println("The version stored is NOT up to date."
 						+ " Saving the current version of the website...");
 				int length = lastVersion.toString().length();
-				int lastVtemp = Integer.parseInt((String) lastVersion
-						.toString().subSequence(length - 6, length - 5));
+				int lastVtemp = Integer.parseInt(lastVersion.toString()
+						.substring(lastVersion.toString().lastIndexOf("V") + 1,
+								lastVersion.toString().lastIndexOf(".html")));
 				String lastV = "V" + Integer.toString(lastVtemp);
 				String currentV = "V" + Integer.toString(lastVtemp + 1);
 
