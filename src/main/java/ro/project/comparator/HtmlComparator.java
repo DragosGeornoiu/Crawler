@@ -10,6 +10,10 @@ import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.Patch;
 
+/**
+ * @author Dragos
+ * 
+ */
 public class HtmlComparator {
 
 	HtmlManager htmlManager;
@@ -36,6 +40,27 @@ public class HtmlComparator {
 	 * @param currentV
 	 *            String The name that the current version of HTML will have
 	 *            when it will be stored locally;
+	 * 
+	 * 
+	 * 
+	 *            NTS: Version of HTML from the current check
+	 *            (currenthVersionHtml) is given as string, but for the one that
+	 *            is in memory the path is given, although the string from it
+	 *            already has been read by this point and it was established
+	 *            that the two strings are different, so we're going to read it
+	 *            a second time here. The application could lead to needing this
+	 *            implementation again, but for the moment should try to create
+	 *            another method similar that just creates diffs from two
+	 *            strings.
+	 * 
+	 *            NTS: Currently nor printing in diff files the line where the
+	 *            difference exists. Easyer for testing at the moment, but in
+	 *            the future this will be crucial necessary.
+	 * 
+	 *            NTS: PROBLEM! The umlauts are treaded as differences. Maybe
+	 *            try to encode the strings and then compare them. Or encode
+	 *            them at the begining of the application and pass them as
+	 *            encoded.
 	 */
 	public void createDifHtml(String pathLastVersionHtml,
 			String currenthVersionHtml, String path, String lastV,
@@ -47,17 +72,14 @@ public class HtmlComparator {
 		List<String> lastVersionHtmlLines = htmlFileToLines(pathLastVersionHtml);
 		List<String> currentVersionHtmlLines = stringHtmlToLines(currenthVersionHtml);
 
-		/* System.out.println("Should create diff html"); */
 		Patch patch = DiffUtils.diff(lastVersionHtmlLines,
 				currentVersionHtmlLines);
 
 		htmlToWrite = "";
-		/* System.out.println("Printing Deltas\n"); */
 		for (Delta delta : patch.getDeltas()) {
 			String revisedText = delta.getRevised().toString();
 			String content = revisedText.substring(
 					revisedText.indexOf(" [") + 2, revisedText.indexOf("]]"));
-			System.out.println("AAAAAAA" + content);
 			htmlToWrite += content + "\n";
 		}
 		htmlManager
@@ -67,12 +89,10 @@ public class HtmlComparator {
 				lastVersionHtmlLines);
 
 		htmlToWrite = "";
-		/* System.out.println("Printing Deltas\n"); */
 		for (Delta delta2 : patch2.getDeltas()) {
 			String revisedText2 = delta2.getRevised().toString();
 			String content2 = revisedText2.substring(
 					revisedText2.indexOf(" [") + 2, revisedText2.indexOf("]]"));
-			System.out.println("BBBBBBBB" + content2);
 			htmlToWrite += content2 + "\n";
 		}
 		htmlManager
@@ -80,14 +100,14 @@ public class HtmlComparator {
 	}
 
 	/**
-	 * Returns the HTML as a List where each line is in a different node.
+	 * Returns the HTML given as String as a List where each line is in a
+	 * different node.
 	 * 
 	 * @param html
 	 *            String The HTML to parse.
 	 * @return a List where each node represents a line from the HTML code.
 	 */
 	private List<String> stringHtmlToLines(String html) {
-		/* System.out.println(lastVersionHtml); */
 		List<String> content = new ArrayList<String>();
 		String lines[] = html.split("\\r?\\n");
 
@@ -98,7 +118,7 @@ public class HtmlComparator {
 	}
 
 	/**
-	 * Returns the Html from the given path as a List with each line in a
+	 * Returns the HTML from the given path as a List with each line in a
 	 * different node.
 	 * 
 	 * @param path

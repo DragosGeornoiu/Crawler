@@ -1,10 +1,17 @@
 package ro.project.comparator;
+
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 
+ * @author Dragos
+ *
+ */
 public class FileManager {
 	/**
 	 * Generate the local disk location where a previous version of the web site
@@ -36,7 +43,7 @@ public class FileManager {
 
 	/**
 	 * Given a String representation of an URL, the method returns a list with
-	 * the URL split for an appropriate folder creation and placement of the
+	 * the URL split for an appropriate folder creation for the placement of the
 	 * HTML.
 	 * 
 	 * @param url
@@ -46,7 +53,7 @@ public class FileManager {
 	 *         version of the URL or where to create a new one
 	 */
 	private List<String> splitUrlToFileNames(String url) {
-		String[] sp = url.split("/");
+		String[] sp = url.split("(/)|(\\.)");
 
 		List<String> splited = new LinkedList<String>(Arrays.asList(sp));
 
@@ -80,7 +87,8 @@ public class FileManager {
 		String temp = fileName.replace("^\\.+", "").replaceAll(
 				"[\\\\/:*?\"<>|]", "");
 
-		if ((temp.equals("http")) || (temp.equals("www"))) {
+		if ((temp.equals("http")) || (temp.equals("www"))
+				|| (temp.equals("html"))) {
 			return "";
 		}
 
@@ -110,20 +118,25 @@ public class FileManager {
 
 		return false;
 	}
-	
+
 	/**
-	 * Returns the last modified file from the given path. It should be a
+	 * Returns the last modified HTML file from the given path. It should be a
 	 * previous version of the web site HTML if the application is working
 	 * correctly, meaning the last modified file should end in V? where ?
 	 * represents an integer.
 	 * 
-	 * @param path The location where to check for last modified file;
+	 * @param path
+	 *            The location where to check for last modified file;
 	 * @return the The last modified file from the given path.
 	 */
 	public File getLastModifiedFile(String path) {
 		File dir = new File(path);
 
-		File[] files = dir.listFiles();
+		File[] files = dir.listFiles((new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".html");
+			}
+		}));
 		if (files.length == 0) {
 			return null;
 		}
@@ -137,6 +150,5 @@ public class FileManager {
 
 		return lastModifiedFile;
 	}
-
 
 }

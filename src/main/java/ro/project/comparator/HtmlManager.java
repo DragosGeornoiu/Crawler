@@ -1,4 +1,5 @@
 package ro.project.comparator;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,6 +13,11 @@ import java.security.NoSuchAlgorithmException;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
+/**
+ * 
+ * @author Dragos
+ *
+ */
 public class HtmlManager {
 
 	/**
@@ -44,7 +50,7 @@ public class HtmlManager {
 	}
 
 	/**
-	 * Used for retrieving the html body from a given URL. By my understanding,
+	 * Used for retrieving the HTML body from a given URL. By my understanding,
 	 * the body is enough to compare or parse it after.
 	 * 
 	 * @param url
@@ -62,7 +68,7 @@ public class HtmlManager {
 	}
 
 	/**
-	 * Gets the HTML stored locally as a String.
+	 * Gets the HTML stored locally in file as a String.
 	 * 
 	 * @param path
 	 *            The full location of the HTML file to read from.
@@ -78,11 +84,6 @@ public class HtmlManager {
 				content += str;
 
 			}
-			/*
-			 * StringBuilder b = new StringBuilder(content); b =
-			 * b.replace(content.lastIndexOf("\n"), content.lastIndexOf("\n") +
-			 * 1, ""); content = b.toString();
-			 */
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -98,57 +99,34 @@ public class HtmlManager {
 		return content;
 	}
 
-	/**
-	 * THIS IS NO GOOD. HASHING FOR NO REASON....
-	 * 
-	 * Hashes the String representing the last version of HTML and the current
-	 * version of HTML and then compares them to see if they are or not
-	 * identical.
+	/**	
+	 * Does almost nothing for the moment, and doesn't see as same the umlauts. Maybe
+	 * try to encode the strings and then compare them. Or encode them at the
+	 * beginning of the application and pass them as encoded.
 	 * 
 	 * @param lastVersionHtml
 	 *            String representation of the last version of HTML, this one
 	 *            was already stored locally.
+	 *            
 	 * @param html
 	 *            String representation of the current version of HTML,
 	 *            depending if they are (or not) equal, this will be stored (or
 	 *            not) locally
+	 *            
 	 * @return true if the two HTML are the same, otherwise false.
 	 */
 	public boolean isDifferent(String lastVersionHtml, String html) {
 
-		String lastVersionHtmlTemp = lastVersionHtml.replace(
-				System.getProperty("line.separator"), "");
-		String htmlTemp = html
-				.replace(System.getProperty("line.separator"), "");
-		/*byte[] hash1 = null;
-		byte[] hash2 = null;
-		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			hash1 = digest.digest(lastVersionHtmlTemp.getBytes("UTF-8"));
-			hash2 = digest.digest(htmlTemp.getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-
-		if ((hash1 != null) && (hash2 != null)) {
-			if (MessageDigest.isEqual(hash1, hash2)) {
-				return false;
-			} else {
-				return true;
-			}
-		}
-		
-		return false;
-*/
-		
-		if(lastVersionHtmlTemp.equals(htmlTemp)) {
+		String lastVersionHtmlTemp = lastVersionHtml.replace("\n", "").replace(
+				"\r", "");
+		String htmlTemp = html.replace("\n", "").replace("\r", "");
+		if (lastVersionHtmlTemp.equals(htmlTemp)) {
 			return false;
+
 		} else {
 			return true;
 		}
-		
+
 	}
 
 }
